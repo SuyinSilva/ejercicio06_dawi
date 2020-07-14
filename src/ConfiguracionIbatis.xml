@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration
+PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+
+
+<!-- PASO 1) Se registra las entidades -->
+<!-- 
+	Se informa al myIbatis los tipos de datos a usar(Bean) o entidades
+	Se coloca el nombre completo, el paquete más el nombre de la clase
+ -->
+<typeAliases>
+
+	<typeAlias alias="concursoBeanIbatis" 
+			   type="com.redsocial.bean.ConcursoBean" />
+
+	<typeAlias alias="deporteBeanIbatis" 
+			   type="com.redsocial.bean.DeporteBean" />
+			   
+	<typeAlias alias="modalidadBeanIbatis" 
+			   type="com.redsocial.bean.ModalidadBean" />
+	
+	<typeAlias alias="medicamentoBeanIbatis" 
+			   type="com.redsocial.bean.MedicamentoBean" />
+			   
+	<typeAlias alias="clienteBeanIbatis" 
+			   type="com.redsocial.bean.ClienteBean" />	
+
+	<typeAlias alias="categoriaBeanIbatis" 
+			   type="com.redsocial.bean.CategoriaBean" />			 			 		   
+	
+	<typeAlias alias="filtroBeanIbatis" 
+			   type="com.redsocial.bean.FiltroBean" />	
+	
+ 	<typeAlias alias="filtroLibrosBeanIbatis" 
+			   type="com.redsocial.bean.FiltroLibrosBean" />	
+			   	
+	<typeAlias alias="librosBeanIbatis" 
+			   type="com.redsocial.bean.LibrosBean" />		
+			   
+	<typeAlias alias="temaBeanIbatis" 
+			   type="com.redsocial.bean.TemaBean" />				   		 			 		   
+</typeAliases>
+
+
+<!-- los valores de la conexion -->		
+<environments default="development">
+				<environment id="development">
+					<transactionManager type="JDBC"/>
+						<dataSource type="UNPOOLED">
+								<property name="driver" value="com.mysql.cj.jdbc.Driver"/>
+								<property name="url" value="jdbc:mysql://localhost:3306/redsocial?serverTimezone=UTC"/>
+								<property name="username" value="root"/>
+								<property name="password" value="mysql"/>
+						</dataSource>
+				</environment>
+</environments>
+
+
+		<mappers>
+				<mapper resource="mapper.xml" />
+		</mappers>
+
+</configuration>

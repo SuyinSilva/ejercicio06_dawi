@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="dawi">
+
+	<!-- - Las clases de entidades se mapean en el myibatis - Se relaciona las 
+		columnas de la tabla con los atributos del bean -->
+
+	<!--	SQL DE MODALIDAD  	 -->
+	
+	<!-- 
+	   	<id property="idDeporte"        - idDeporte es la pk en la tabla
+		<result column="nombre"         - nombre es un campo cómun en la tabla
+		<association column="idDeporte  -idDeporte es un fk en la tabla
+	 -->
+	<resultMap id="mapDeporte" type="deporteBeanIbatis">
+		<id property="idDeporte" column="iddeporte" />
+		<result property="nombre" column="nombre" />
+	</resultMap>
+	
+	<resultMap id="mapModalidad" type="modalidadBeanIbatis">
+		<id property="idModalidad" column="idmodalidad" />
+		<result property="nombre" column="nombre" />
+		<result property="edadMaxima" column="edadMaxima" />
+		<result property="edadMinima" column="edadMinima" />
+		<result property="numHombres" column="numHombres" />
+		<result property="numMujeres" column="numMujeres" />
+		<result property="sede" column="sede" />
+		<association property="deporte" column="idDeporte"	select="SQL_llaveForaneaDeporte" />
+	</resultMap>
+
+	<select id="SQL_llaveForaneaDeporte" resultMap="mapDeporte" parameterType="int">
+		select * from deporte where iddeporte = #{param}
+	</select>
+
+	<!-- LLena el combobox de deporte -->
+	<select id="SQL_lista_deporte" resultMap="mapDeporte">
+		select * from deporte
+	</select>
+
+	<select id="SQL_lista_modalidad" resultMap="mapModalidad"	parameterType="java.lang.String">
+		select * from modalidad where nombre like #{filtro}
+	</select>
+
+	<insert id="SQL_inserta_modalidad" parameterType="modalidadBeanIbatis">
+		insert into modalidad values(null,#{nombre},#{numHombres},
+									      #{numMujeres},#{edadMaxima},
+										  #{edadMinima},#{sede},#{deporte.idDeporte})
+	</insert>
+
+	<delete id="SQL_elimina_Modalidad" parameterType="int">
+		delete from modalidad where idModalidad = #{idModalidad}
+	</delete>
+
+	<update id="SQL_actualiza_Modalidad" parameterType="modalidadBeanIbatis">
+		update modalidad set nombre = #{nombre},
+		numHombres = #{numHombres},
+		numMujeres = #{numMujeres},
+		edadMaxima = #{edadMaxima},
+		edadMinima = #{edadMinima},
+		sede = #{sede},
+		idDeporte = #{deporte.idDeporte}
+		where idModalidad = #{idModalidad}
+	</update>
+
+	<!--	SQL DE CONCURSO  	 -->
+	
+	<!-- Como se relaciona clases con las tablas y los atributos y las columnas -->
+	<resultMap id="mapConcurso" type="concursoBeanIbatis">
+		<id property="idConcurso" column="idconcurso" />
+		<result property="nombre" column="nombre" />
+		<result property="fechaInicio" column="fechaInicio" />
+		<result property="fechaFin" column="fechaFin" />
+		<result property="estado" column="estado" />
+	</resultMap>
+	
+	
+	<select id="SQL_lista_Concurso" resultMap="mapConcurso" parameterType="java.lang.String">
+		select * from concurso where nombre like #{filtro}
+	</select>
+
+
+	<insert id="SQL_inserta_Concurso" parameterType="concursoBeanIbatis">
+		insert into
+		concurso values(null,
+		#{nombre},#{fechaInicio},#{fechaFin},#{estado})
+	</insert>
+
+	<update id="SQL_actualiza_Concurso" parameterType="concursoBeanIbatis">
+		update
+		concurso set
+		nombre = #{nombre},
+		fechaInicio = #{fechaInicio},
+		fechaFin =
+		#{fechaFin},estado = #{estado}
+		where idconcurso = #{idConcurso}
+	</update>
+
+	<delete id="SQL_elimina_Concurso" parameterType="int">
+		delete from
+		concurso where idconcurso = #{id}
+	</delete>
+
+	<!-- parameterType : parámetro del método que va completar el SQL -->
+	
+	
+	<!-- SQL de Medicamento -->
+	<resultMap id="mapMedicamento" type="medicamentoBeanIbatis">
+		<id property="idMedicamento" column="idmedicamento"/>
+		<result property="nombre" column="nombre"/>
+		<result property="precio" column="precio"/>
+		<result property="stock" column="stock"/>
+		<result property="laboratorio" column="laboratorio"/>
+	</resultMap>
+
+	<insert id="SQL_inserta_medicamento" parameterType="medicamentoBeanIbatis">
+		insert into medicamento values(null,#{nombre},#{precio},#{stock},#{laboratorio})
+	</insert>
+	
+	
+	<!-- SQL de cliente -->
+	<resultMap  id="mapCategoria" type="categoriaBeanIbatis">
+		<id property="idCategoria" column="idcategoria"/>
+		<result property="nombre" column="nombre"/>
+	</resultMap>
+	
+	<resultMap id="mapCliente"  type="clienteBeanIbatis">
+		<id property="idCliente" column="idcliente"/>
+		<result property="nombre" column="nombre"/>
+		<result property="dni" column="dni"/>
+		<result property="fechaNacimiento" column="fechaNacimiento"/>
+		<association property="categoria" column="idcategoria" select="SQL_busca_categoria"/>
+	</resultMap>
+	
+	<select id="SQL_busca_categoria" resultMap="mapCategoria" parameterType="int">
+		select * from categoria where idCategoria = #{id}
+	</select>
+	
+	<select id="SQL_lista_categoria" resultMap="mapCategoria">
+		select * from categoria
+	</select>
+	
+	<insert id="SQL_inserta_cliente" parameterType="clienteBeanIbatis">
+		insert into cliente values(null,#{nombre},#{dni},#{fechaNacimiento},#{categoria.idCategoria})	
+	</insert>
+
+	<select id="SQL_listaModalidadPorFiltro" 
+					parameterType="filtroBeanIbatis" resultMap="mapModalidad">
+		select * from modalidad	
+		<where>
+			
+			nombre like #{nombre}
+			
+			<if test="idDeporte != -1">
+					and iddeporte = #{idDeporte}
+			</if>
+			
+			<if test="edad > 17">
+					and edadMinima &lt; #{edad} and edadMaxima &gt; #{edad}
+			</if>
+			
+		</where>		
+	</select>
+	
+	<select id="SQL_listaModalidadMultiple" 
+					parameterType="filtroBeanIbatis" resultMap="mapModalidad">
+		select * from modalidad where idDeporte in
+			
+		<foreach open="(" close=")" separator="," collection="deportes" item="x" >
+				${x}	
+		</foreach>
+	</select>
+	
+		<!-- SQL libros-->
+	<resultMap id="mapLibros" type="librosBeanIbatis">
+		<id property="idLibros" column="idlibros" />
+		<result property="titulo" column="titulo" />
+		<result property="precio" column="precio" />
+		<association property="temas" column="idTema"	select="SQL_llaveForaneaTema" />
+	</resultMap>
+		<resultMap id="mapTema" type="temaBeanIbatis">
+		<id property="idTema" column="idtema" />
+		<result property="nombre" column="nombre" />
+	</resultMap>
+
+	<select id="SQL_llaveForaneaTema" resultMap="mapTema" parameterType="int">
+		select * from tema where idtema = #{param}
+	</select>
+
+	<!-- LLena el combobox de tema -->
+	<select id="SQL_lista_tema" resultMap="mapTema">
+		select * from tema
+	</select>
+	
+		<select id="SQL_listaLibrosMultiple" 
+					parameterType="filtroLibrosBeanIbatis" resultMap="mapLibros">
+		select * from libros where tema in
+			
+		<foreach open="(" close=")" separator="," collection="temas" item="x" >
+				${x}	
+		</foreach>
+	</select>
+</mapper>
+
+
+
+
+
+
+
